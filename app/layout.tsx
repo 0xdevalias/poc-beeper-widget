@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { WidgetApi, WidgetApiImpl } from "@beeper/matrix-widget-toolkit-api";
+import { WidgetApiImpl } from "@beeper/matrix-widget-toolkit-api";
 import {
   MuiThemeProvider,
   MuiWidgetApiProvider,
@@ -15,7 +15,11 @@ const widgetApiPromise =
     ? WidgetApiImpl.create({
         capabilities: [],
       })
-    : new Promise<WidgetApi>(() => {});
+    : (() => {
+        throw new Error(
+          "window not available so not calling WidgetApiImpl.create",
+        );
+      })();
 
 export default function RootLayout({
   children,
