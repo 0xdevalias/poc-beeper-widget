@@ -47,3 +47,25 @@ export const groupEventsByDomainAndSenderReducer = (
 
   return acc;
 };
+
+const emptyDomainSenderNameMapping: BucketedByDomainAndSender<string> =
+  Object.freeze({});
+export const mapBucketedRoomEventsToRoomNames = (
+  bucketedRoomEvents: BucketedByDomainAndSender,
+): BucketedByDomainAndSender<string> => {
+  if (!bucketedRoomEvents) return emptyDomainSenderNameMapping;
+
+  const domainSenderNameMapping: BucketedByDomainAndSender<string> = {};
+
+  Object.keys(bucketedRoomEvents).forEach((domain) => {
+    domainSenderNameMapping[domain] = domainSenderNameMapping[domain] || {};
+
+    Object.keys(bucketedRoomEvents[domain]).forEach((sender) => {
+      domainSenderNameMapping[domain][sender] = bucketedRoomEvents[domain][
+        sender
+      ].map((event) => event.name);
+    });
+  });
+
+  return domainSenderNameMapping;
+};

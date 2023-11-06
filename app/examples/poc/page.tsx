@@ -11,6 +11,7 @@ import Back from "@/app/components/back";
 import {
   BucketedByDomainAndSender,
   groupEventsByDomainAndSenderReducer,
+  mapBucketedRoomEventsToRoomNames,
 } from "@/app/examples/poc/_helpers";
 
 // TODO: Refactor this so that once we have loaded the room names/etc once, we use the 'since' parameter to only load new events
@@ -47,25 +48,10 @@ export default function PoC() {
     [roomNamesData],
   );
 
-  const bucketedRoomNames = useMemo(() => {
-    // Initialize an empty object for the new structure
-    const domainSenderNameMapping: BucketedByDomainAndSender<string> = {};
-
-    // Check if bucketedRoomNamesData is not null or undefined
-    if (bucketedRoomNamesData) {
-      Object.keys(bucketedRoomNamesData).forEach((domain) => {
-        domainSenderNameMapping[domain] = domainSenderNameMapping[domain] || {};
-
-        Object.keys(bucketedRoomNamesData[domain]).forEach((sender) => {
-          domainSenderNameMapping[domain][sender] = bucketedRoomNamesData[
-            domain
-          ][sender].map((event) => event.name);
-        });
-      });
-    }
-
-    return domainSenderNameMapping;
-  }, [bucketedRoomNamesData]);
+  const bucketedRoomNames = useMemo(
+    () => mapBucketedRoomEventsToRoomNames(bucketedRoomNamesData),
+    [bucketedRoomNamesData],
+  );
 
   const facebookRoomNames =
     bucketedRoomNames["beeper.local"]?.["facebook"] ?? [];
